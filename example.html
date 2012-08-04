@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+
+	<!-- Basic Page Needs
+  ================================================== -->
+	<meta charset="utf-8">
+	<title>Format</title>
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<!-- Mobile Specific Metas
+  ================================================== -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<!-- CSS
+  ================================================== -->
+	<link rel="stylesheet" href="src/stylesheets/base.css">
+	<link rel="stylesheet" href="src/stylesheets/skeleton.css">
+	<link rel="stylesheet" href="src/stylesheets/layout.css">
+	<link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="format.css">
+
+	<!-- JS
+  ================================================== -->
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript" src="src/js/underscore-min.js"></script>
+	<script type="text/javascript" src="src/js/huk.js"></script>
+	<script type="text/javascript" src="src/js/styled.js"></script>
+	<script type="text/javascript" src="format.js"></script>
+
+	<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<script type="text/javascript">
+
+		$(function() {
+
+			huk('.container')
+				.groups()
+				.groups({
+					count: 5
+					, size: 4
+					, name: 'Group Test Stage #2'
+				})
+				.bracket()
+				.bracket({
+					type: 'de'
+					, size: 16
+				})
+				.bracket({
+					type: 'de'
+					, size: 32
+					, name: 'Bracket Test Stage #2'
+				})
+			.html()
+
+
+		})
+
+
+	</script>
+
+</head>
+<body>
+
+	<!-- Primary Page Layout
+	================================================== -->
+
+	<div class="container">
+
+	</div><!-- container -->
+
+<!-- End Document
+================================================== -->
+
+</body>
+</html>
