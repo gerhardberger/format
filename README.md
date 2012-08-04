@@ -1,7 +1,7 @@
 Format.js
 =========
 
-*Format* is a [huk](https://github.com/gerhardberger/HuK) bundle, that lets you create nice **groups** and **brackets** (single and double elimination) used in sports tournaments. It depends on Underscore, jQuery, [Skeleton](http://www.getskeleton.com/), styled and huk.
+*Format* is a [huk](https://github.com/gerhardberger/HuK) bundle, that lets you create nice **groups** and **brackets** (single and double elimination) used in sports tournaments. It depends on Underscore, jQuery, [Skeleton](http://www.getskeleton.com/), styled and huk. [Demo](http://felix.lovassy.hu/projects/gellert/format/example.html)
 
 Example
 -------
