@@ -2,7 +2,7 @@
 
 	function Styled(selector, filename) {
 		var styles
-
+		
 		if (filename) {
 			var fs = filename.replace(/\s/g,'').split(',').map(function(f) { return f + '.css' })
 			styles = fs.map(function(fname) {
@@ -36,21 +36,21 @@
 		rules = _.flatten(rules)
 		this.matched = rules
 
-		var os = rules.map(function(rule) {
+		var os = rules.map(function(rule, ix) {
 			var style = rule.style
 				, keys  = _.map(style, function(s) { return s })
 				, keys_ = keys.map(function(key) {
-					key = key.replace(/-./g, function(k, ix) {
+					key = key.replace(/-./g, function(k, ix_) {
 						// IF the first character is `-` replace with '' 
-						return (ix === 0) ? k[1] : k[1].toUpperCase()
+						return (ix_ === 0) ? k[1] : k[1].toUpperCase()
 					})
 					return key
 				})
 
 			var o = {}
-			keys.map(function(key, ix) {
-				var k = keys_[ix]
-				o[key] = style[k]
+			keys.map(function(key, ix__) {
+				var k = keys_[ix__]
+				o[key] = {val: style[k], ix: ix}
 			})
 
 			return o
@@ -67,7 +67,29 @@
 	}
 
 	Styled.prototype.get = function(key) {
-		return this.css[key]
+		var v  = this.css[key].val
+			, v_ = parseInt(v)
+		return v_ === NaN ? v : v_
+	}
+
+	Styled.prototype.set = function(keys, value) {
+		var self = this
+		if (_.isString(keys)) {
+			var keyUpper = keys.replace(/-./g, function(k, ix_) { return (ix_ === 0) ? k[1] : k[1].toUpperCase() })
+
+			self.matched[self.css[keys].ix].style[keyUpper] = value
+			self.css[keys].val = value
+		}
+		else {
+			_.each(keys, function(value, key) {
+				var keyUpper = key.replace(/-./g, function(k, ix_) { return (ix_ === 0) ? k[1] : k[1].toUpperCase() })
+
+				self.matched[self.css[key].ix].style[keyUpper] = value
+				self.css[key].val = value
+			})
+		}
+
+		return this
 	}
 
 	$.fn.styled = function(f) {

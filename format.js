@@ -9,6 +9,19 @@
 	$.fn.rest = function() { return $(this).slice(1) }
 	$.fn.initial = function() { return $(this).slice(0,$(this).length-1) }
 
+	$.fn.scrollFixed = function(p) {
+		$(this).each(function() {
+			var self   = this
+				, parent = $(self).parent() || $(p)
+
+			parent.on('scroll', function() {
+				$(self)
+				.css('left', this.scrollLeft + this.offsetWidth  - parseInt($(self).css('width'))  + 'px')
+				.css('top',  this.scrollTop  + 'px')
+			})
+		})
+	}
+
 	function isTwoPower(n) {
 		if (n == 1) return true
 		if (n % 2 == 0) return isTwoPower(n/2)
@@ -17,7 +30,7 @@
 
 	function calcMargins(ix) {
 		var match = {
-			height: 59
+			height: 55
 			, margin: parseInt($('.bracket-row .match').styled('format').get('margin-top'))
 		}
 
@@ -41,7 +54,7 @@
 				class: 'bracket'
 				, id: id
 				, content: huk()
-					.close('bracket-close')
+					.corner()
 					.input({
 						type: 'text'
 						, class: 'format-name'
@@ -49,6 +62,8 @@
 					})
 				.val()
 			})
+
+		$(bracket).find('.corner').scrollFixed()
 
 		if (!isTwoPower(b.size)) return
 
@@ -62,8 +77,8 @@
 		arr = arr.map(function(a, ix) { return huk.bracketRow({n: a, ix: ix}) })
 		$(bracket).append(arr)
 
-		$(bracket).find('.bracket-close').on('click', function() {
-			$(this).parent().remove()
+		$(bracket).find('.close').on('click', function() {
+			$(this).parent().parent().remove()
 		})
 
 		return bracket
@@ -75,7 +90,7 @@
 				class: 'bracket'
 				, id: id
 				, content: huk()
-					.close('bracket-close')
+					.corner()
 					.input({
 						type: 'text'
 						, class: 'format-name'
@@ -88,6 +103,24 @@
 			, winner = $(bracket).find('.winner')[0]
 			, loser = $(bracket).find('.loser')[0]
 		;
+
+		huk(winner)
+			.input({
+				class: 'sub-bracket-name'
+				, type: 'text'
+				, value: 'Winner Bracket'
+			})
+		.html()
+
+		huk(loser)
+			.input({
+				class: 'sub-bracket-name'
+				, type: 'text'
+				, value: 'Loser Bracket'
+			})
+		.html()
+
+		$(bracket).find('.corner').scrollFixed()
 
 		if (!isTwoPower(data.size)) return
 
@@ -116,8 +149,8 @@
 
 		$(loser).css('margin-top', ($(winner).find('.bracket-row').first().height()+40) + 'px').append(arr)
 
-		$(bracket).find('.bracket-close').on('click', function() {
-			$(this).parent().remove()
+		$(bracket).find('.close').on('click', function() {
+			$(this).parent().parent().remove()
 		})
 
 		return bracket
@@ -132,6 +165,19 @@
 		})
 	})
 
+	huk.bundle('corner', function() {
+		return huk.div({
+			class: 'corner'
+			, content: huk()
+				.img({
+					src: 'src/images/settings-icon.png'
+					, class: 'settings'
+				})
+				.close()
+			.val()
+		})
+	})
+
 	huk.bundle('bracketMatch', function() {
 		return huk()
 			.input({ class: 'player A', type: 'text' })
@@ -140,7 +186,14 @@
 	})
 
 	huk.bundle('bracketRow', function(data) {
-		var row = huk.div({class: 'bracket-row round' + 2*data.n, css: {left: (((data.offset) && (data.ix > 1) ? data.ix*2-data.offset : data.ix) * 205 + 15) + 'px'}})
+		var bRow = $('.bracket .bracket-row').styled()
+			, row = huk.div({
+				class: 'bracket-row round' + 2*data.n,
+				css: {
+					left: ((data.offset) && (data.ix > 1) ? data.ix*2-data.offset : data.ix) *
+						(bRow.get('width') + bRow.get('margin-left') + bRow.get('margin-right')) + 'px'
+				}
+			})
 
 		huk(row)
 			.div({
@@ -292,7 +345,7 @@
 				class: 'groups'
 				, id: id
 				, content: huk()
-					.close('groups-close')
+					.corner()
 					.input({
 						type: 'text'
 						, class: 'format-name'
@@ -301,9 +354,12 @@
 			})
 			, arr    = _.range(o.count + 1).map(function(ix) { return {size: o.size, self: groups, ix: ix} })
 
-		$(groups).find('.groups-close').on('click', function() { $(this).parent().remove() })
+
+		$(groups).find('.close').on('click', function() { $(this).parent().remove() })
 
 		huk(groups).groupsList(arr, 'div').append()
+
+		$(groups).find('> div').rest().addClass('group')
 
 		huk($(groups).find('div').last()).button({ content: 'New group!', class: 'new-group' }).append()
 
@@ -322,6 +378,8 @@
 		})
 
 		return groups
+	}, function() {
+		$(this).find('.corner').css('left', this.scrollLeft + this.offsetWidth - parseInt($('.corner').styled().get('width')) + 'px')
 	})
 
 
@@ -340,6 +398,8 @@
 	}, function(o) {
 		var self = this
 		o = o || {}
+
+		$(self).trigger('scroll')
 
 		// Set the default values if necessary
 		o.type = o.type || 'se'
@@ -377,10 +437,11 @@
 			var winner = $(this).find('.winner')
 				, loser  = $(this).find('.loser')
 				, bracket = this
-			$(loser).css('margin-top', ($(winner).find('.bracket-row').first().height()+parseInt($(loser).css('margin-top'))) + 'px')
-			$(bracket).height(($(loser).find('.bracket-row').first().height() + $(winner).find('.bracket-row').first().height()+100) + 'px')
 
-			var init = $(winner).find('.bracket-row').initial()
+			loser.css('margin-top', (winner.find('.bracket-row').first().height()+parseInt(loser.css('margin-top'))) + 'px')
+			$(bracket).height((winner.find('.sub-bracket-name')[0].offsetHeight*2 + loser.find('.bracket-row')[0].offsetHeight + winner.find('.bracket-row')[0].offsetHeight + 140) + 'px')
+
+			var init = winner.find('.bracket-row').initial()
 			init.map(function() {
 				var row = this
 
@@ -404,7 +465,7 @@
 				})
 			})
 
-			init = $(loser).find('.bracket-row').initial()
+			init = loser.find('.bracket-row').initial()
 			init.map(function(ix_) {
 				var row = this
 
