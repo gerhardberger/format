@@ -369,10 +369,13 @@
 			var that = this
 			$(this).remove()
 
-			huk(groups).div(huk.groupsList({
-				size: divs.last().find('ul li').length - 1
-				, ix: divs.length
-			})).append()
+			huk(groups).div({
+				class: 'group'
+				, content: huk.groupsList({
+					size: divs.last().find('ul li').length - 1
+					, ix: divs.length
+				})
+			}).append()
 
 			$(groups).find('div:last-child').append(that)
 		})
