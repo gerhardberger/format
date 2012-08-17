@@ -19,6 +19,11 @@
 				.css('left', this.scrollLeft + this.offsetWidth  - parseInt($(self).css('width'))  + 'px')
 				.css('top',  this.scrollTop  + 'px')
 			})
+			.on('resize', function() {
+				$(self)
+				.css('left', this.scrollLeft + this.offsetWidth  - parseInt($(self).css('width'))  + 'px')
+				.css('top',  this.scrollTop  + 'px')
+			})
 		})
 	}
 
@@ -180,8 +185,20 @@
 
 	huk.bundle('bracketMatch', function() {
 		return huk()
-			.input({ class: 'player A', type: 'text' })
-			.input({ class: 'player B', type: 'text' })
+			.div({
+				class: 'player winner'
+				, content: huk()
+					.input({ class: 'name A', type: 'text' })
+					.input({ class: 'score',  type: 'text' })
+				.val()
+			})
+			.div({
+				class: 'player loser'
+				, content: huk()
+					.input({ class: 'name B', type: 'text' })
+					.input({ class: 'score',  type: 'text' })
+				.val()
+			})
 		.val()
 	})
 
@@ -274,18 +291,18 @@
 		var l = huk.list({
 			items: _.range(data.size+1)
 			, itemArgs: {
-				content: huk.input({type: 'text'})
+				content: huk().input({type: 'text', class: 'player' }).input({ type: 'text', class: 'score' }).val()
 				, head: function() { $(this).html('Group ' + abc[data.ix].toUpperCase()) }
-				, rest: function(e, ix_) { $(this).data('data', { ix: ix_ }).addClass('player') }
+				, rest: function(e, ix_) { $(this).data('data', { ix: ix_ }).addClass('groupLi') }
 			}
 		})
 
 		if (data.ix == 0){
-			$(l).find('.player').append(huk.close())
+			$(l).find('.groupLi').append(huk.close())
 			huk(l).button({content: 'Add new!', class: 'new'}).append()
 		}
 
-		$(l).on('click', '.player .close', function() {
+		$(l).on('click', '.groupLi .close', function() {
 			var ix = $(this).parent().nth() + 1
 
 			$($(data.self).find('ul li:nth-child(' + ix + ')')).remove()
@@ -297,11 +314,11 @@
 				if (nth === 0) return
 
 				var c = nth === 1 ?
-					huk().input({type: 'text'}).close().val() :
-					huk.input({type: 'text'})
+					huk().input({type: 'text', class: 'player' }).input({ type: 'text', class: 'score' }).close().val() :
+					huk().input({type: 'text', class: 'player' }).input({ type: 'text', class: 'score' }).val()
 
 				$(this).find('li').last().after(huk.li({
-					class: 'player'
+					class: 'groupLi'
 					, content: c
 				}))
 			})
@@ -355,7 +372,7 @@
 			, arr    = _.range(o.count + 1).map(function(ix) { return {size: o.size, self: groups, ix: ix} })
 
 
-		$(groups).find('.close').on('click', function() { $(this).parent().remove() })
+		$(groups).find('.close').on('click', function() { $(this).parent().parent().remove() })
 
 		huk(groups).groupsList(arr, 'div').append()
 
@@ -437,8 +454,8 @@
 			})
 		}
 		else {
-			var winner = $(this).find('.winner')
-				, loser  = $(this).find('.loser')
+			var winner = $(this).find('> .winner')
+				, loser  = $(this).find('> .loser')
 				, bracket = this
 
 			loser.css('margin-top', (winner.find('.bracket-row').first().height()+parseInt(loser.css('margin-top'))) + 'px')
